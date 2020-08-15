@@ -60,8 +60,6 @@ RegisterCommand('radiotest', function(source, args)
   local playerName = GetPlayerName(PlayerId())
   local data = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
 
-  print(tonumber(data))
-
   if data == "nil" then
     exports['mythic_notify']:DoHudText('inform', Config.messages['not_on_radio'])
   else
@@ -72,40 +70,49 @@ end, false)
 
 -- dołączanie do radia
 
+function canAccessRestrictedChannel(channel)
+    if PlayerData == nil or PlayerData.job == nil or PlayerData.job.name == nil then
+        return false
+    end
+
+    local channels = Config.RestrictedChannelPermissions[PlayerData.job.name]
+
+    if channels == nil then
+        return false
+    end
+
+    for _, channel_id in ipairs(channels) do
+        if channel == channel_id then
+            return true
+        end
+    end
+
+    return false
+end
+
 RegisterNUICallback('joinRadio', function(data, cb)
-    local _source = source
-    local PlayerData = ESX.GetPlayerData(_source)
+    local radio_channel = tonumber(data.channel)
     local playerName = GetPlayerName(PlayerId())
     local getPlayerRadioChannel = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
 
-    if tonumber(data.channel) ~= tonumber(getPlayerRadioChannel) then
-        if tonumber(data.channel) <= Config.RestrictedChannels then
-          if(PlayerData.job.name == 'police' or PlayerData.job.name == 'ambulance' or PlayerData.job.name == 'fire') then
-            exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
-            exports.tokovoip_script:setPlayerData(playerName, "radio:channel", tonumber(data.channel), true);
-            exports.tokovoip_script:addPlayerToRadio(tonumber(data.channel))
-            exports['mythic_notify']:DoHudText('inform', Config.messages['joined_to_radio'] .. data.channel .. '.00 MHz </b>')
-          elseif not (PlayerData.job.name == 'police' or PlayerData.job.name == 'ambulance' or PlayerData.job.name == 'fire') then
-            --- info że nie możesz dołączyć bo nie jesteś policjantem
-            exports['mythic_notify']:DoHudText('error', Config.messages['restricted_channel_error'])
-          end
-        end
-        if tonumber(data.channel) > Config.RestrictedChannels then
-          exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
-          exports.tokovoip_script:setPlayerData(playerName, "radio:channel", tonumber(data.channel), true);
-          exports.tokovoip_script:addPlayerToRadio(tonumber(data.channel))
-          exports['mythic_notify']:DoHudText('inform', Config.messages['joined_to_radio'] .. data.channel .. '.00 MHz </b>')
-        end
-      else
+    if radio_channel == tonumber(getPlayerRadioChannel) then
         exports['mythic_notify']:DoHudText('error', Config.messages['you_on_radio'] .. data.channel .. '.00 MHz </b>')
-      end
-      --[[
+
+        return
+    end
+
+    if radio_channel <= Config.RestrictedChannels and not canAccessRestrictedChannel(radio_channel) then
+        exports['mythic_notify']:DoHudText('error', Config.messages['restricted_channel_error'])
+
+        return
+    end
+
+
     exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
-    exports.tokovoip_script:setPlayerData(playerName, "radio:channel", tonumber(data.channel), true);
-    exports.tokovoip_script:addPlayerToRadio(tonumber(data.channel))
-    PrintChatMessage("radio: " .. data.channel)
-    print('radiook')
-      ]]--
+    exports.tokovoip_script:setPlayerData(playerName, "radio:channel", radio_channel, true);
+    exports.tokovoip_script:addPlayerToRadio(radio_channel)
+    exports['mythic_notify']:DoHudText('inform', Config.messages['joined_to_radio'] .. radio_channel .. '.00 MHz </b>')
+
     cb('ok')
 end)
 
