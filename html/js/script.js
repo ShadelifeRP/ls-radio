@@ -15,8 +15,8 @@ function Click(x, y) {
     element.focus().click();
 }
 
-$(function() {
-    window.addEventListener('message', function(event) {
+$(function () {
+    window.addEventListener('message', function (event) {
         if (event.data.type == "enableui") {
             cursor.style.display = event.data.enable ? "block" : "none";
             document.body.style.display = event.data.enable ? "block" : "none";
@@ -26,7 +26,7 @@ $(function() {
         }
     });
 
-    $(document).mousemove(function(event) {
+    $(document).mousemove(function (event) {
         cursorX = event.pageX;
         cursorY = event.pageY;
         UpdateCursorPos();
@@ -38,7 +38,7 @@ $(function() {
         }
     };
 
-    $("#login-form").submit(function(e) {
+    $("#login-form").submit(function (e) {
         e.preventDefault(); // Prevent form from submitting
 
         $.post('http://ls-radio/joinRadio', JSON.stringify({
@@ -46,11 +46,9 @@ $(function() {
         }));
     });
 
-    $("#onoff").submit(function(e) {
+    $("#onoff").submit(function (e) {
         e.preventDefault(); // Prevent form from submitting
 
-        $.post('http://ls-radio/leaveRadio', JSON.stringify({
-
-        }));
+        $.post('http://ls-radio/leaveRadio', JSON.stringify({}));
     });
 });

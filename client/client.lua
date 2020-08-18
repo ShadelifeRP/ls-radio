@@ -1,4 +1,3 @@
-
 --===============================================================================
 --=== Stworzone przez Alcapone aka suprisex. Zakaz rozpowszechniania skryptu! ===
 --===================== na potrzeby LS-Story.pl =================================
@@ -8,21 +7,21 @@
 -- ESX
 
 ESX = nil
-local PlayerData                = {}
+local PlayerData = {}
 
 Citizen.CreateThread(function()
-  while ESX == nil do
-    TriggerEvent('esx:getSharedObject', function(obj)
-        ESX = obj
-        PlayerData = ESX.GetPlayerData() or {}
-    end)
-    Citizen.Wait(0)
-	end
+    while ESX == nil do
+        TriggerEvent('esx:getSharedObject', function(obj)
+            ESX = obj
+            PlayerData = ESX.GetPlayerData() or {}
+        end)
+        Citizen.Wait(0)
+    end
 end)
 
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(job)
-  PlayerData.job = job
+    PlayerData.job = job
 end)
 
 
@@ -36,23 +35,20 @@ end
 
 function enableRadio(enable)
 
-  SetNuiFocus(true, true)
-  radioMenu = enable
+    SetNuiFocus(true, true)
+    radioMenu = enable
 
-  SendNUIMessage({
-
-    type = "enableui",
-    enable = enable
-
-  })
-
+    SendNUIMessage({
+        type = "enableui",
+        enable = enable
+    })
 end
 
 --- sprawdza czy komenda /radio jest włączony
 
 RegisterCommand('radio', function(source, args)
     if Config.enableCmd then
-      enableRadio(true)
+        enableRadio(true)
     end
 end, false)
 
@@ -60,15 +56,14 @@ end, false)
 -- radio test
 
 RegisterCommand('radiotest', function(source, args)
-  local playerName = GetPlayerName(PlayerId())
-  local data = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
+    local playerName = GetPlayerName(PlayerId())
+    local data = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
 
-  if data == "nil" then
-    exports['mythic_notify']:DoHudText('inform', Config.messages['not_on_radio'])
-  else
-   exports['mythic_notify']:DoHudText('inform', Config.messages['on_radio'] .. data .. '.00 MHz </b>')
- end
-
+    if data == "nil" then
+        exports['mythic_notify']:DoHudText('inform', Config.messages['not_on_radio'])
+    else
+        exports['mythic_notify']:DoHudText('inform', Config.messages['on_radio'] .. data .. '.00 MHz </b>')
+    end
 end, false)
 
 -- dołączanie do radia
@@ -122,19 +117,18 @@ end)
 -- opuszczanie radia
 
 RegisterNUICallback('leaveRadio', function(data, cb)
-   local playerName = GetPlayerName(PlayerId())
-   local getPlayerRadioChannel = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
+    local playerName = GetPlayerName(PlayerId())
+    local getPlayerRadioChannel = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
 
     if getPlayerRadioChannel == "nil" then
-      exports['mythic_notify']:DoHudText('inform', Config.messages['not_on_radio'])
-        else
-          exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
-          exports.tokovoip_script:setPlayerData(playerName, "radio:channel", "nil", true)
-          exports['mythic_notify']:DoHudText('inform', Config.messages['you_leave'] .. getPlayerRadioChannel .. '.00 MHz </b>')
+        exports['mythic_notify']:DoHudText('inform', Config.messages['not_on_radio'])
+    else
+        exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
+        exports.tokovoip_script:setPlayerData(playerName, "radio:channel", "nil", true)
+        exports['mythic_notify']:DoHudText('inform', Config.messages['you_leave'] .. getPlayerRadioChannel .. '.00 MHz </b>')
     end
 
-   cb('ok')
-
+    cb('ok')
 end)
 
 RegisterNUICallback('escape', function(data, cb)
@@ -150,20 +144,19 @@ end)
 
 RegisterNetEvent('ls-radio:use')
 AddEventHandler('ls-radio:use', function()
-  enableRadio(true)
+    enableRadio(true)
 end)
 
 RegisterNetEvent('ls-radio:onRadioDrop')
 AddEventHandler('ls-radio:onRadioDrop', function(source)
-  local playerName = GetPlayerName(source)
-  local getPlayerRadioChannel = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
+    local playerName = GetPlayerName(source)
+    local getPlayerRadioChannel = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
 
-  if getPlayerRadioChannel ~= "nil" then
-    exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
-    exports.tokovoip_script:setPlayerData(playerName, "radio:channel", "nil", true)
-    exports['mythic_notify']:DoHudText('inform', Config.messages['you_leave'] .. getPlayerRadioChannel .. '.00 MHz </b>')
-
-end
+    if getPlayerRadioChannel ~= "nil" then
+        exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
+        exports.tokovoip_script:setPlayerData(playerName, "radio:channel", "nil", true)
+        exports['mythic_notify']:DoHudText('inform', Config.messages['you_leave'] .. getPlayerRadioChannel .. '.00 MHz </b>')
+    end
 end)
 
 Citizen.CreateThread(function()
