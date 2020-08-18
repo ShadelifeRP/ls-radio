@@ -8,6 +8,7 @@
 
 ESX = nil
 local PlayerData = {}
+local radioMenu = false
 
 Citizen.CreateThread(function()
     while ESX == nil do
@@ -24,17 +25,11 @@ AddEventHandler('esx:setJob', function(job)
     PlayerData.job = job
 end)
 
-
-local radioMenu = false
-
 function PrintChatMessage(text)
     TriggerEvent('chatMessage', "system", { 255, 0, 0 }, text)
 end
 
-
-
 function enableRadio(enable)
-
     SetNuiFocus(true, true)
     radioMenu = enable
 
@@ -105,7 +100,6 @@ RegisterNUICallback('joinRadio', function(data, cb)
         return
     end
 
-
     exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
     exports.tokovoip_script:setPlayerData(playerName, "radio:channel", radio_channel, true);
     exports.tokovoip_script:addPlayerToRadio(radio_channel)
@@ -132,10 +126,8 @@ RegisterNUICallback('leaveRadio', function(data, cb)
 end)
 
 RegisterNUICallback('escape', function(data, cb)
-
     enableRadio(false)
     SetNuiFocus(false, false)
-
 
     cb('ok')
 end)
