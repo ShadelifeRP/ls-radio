@@ -17,5 +17,4 @@ Config.messages = {
   ['restricted_channel_error'] = 'You can not join that encrypted channel',
   ['you_on_radio'] = 'You are already on the radio: <b>',
   ['you_leave'] = 'You left the radio: <b>'
-
 }

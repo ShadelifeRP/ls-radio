@@ -12,7 +12,10 @@ local PlayerData                = {}
 
 Citizen.CreateThread(function()
   while ESX == nil do
-    TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+    TriggerEvent('esx:getSharedObject', function(obj)
+        ESX = obj
+        PlayerData = ESX.GetPlayerData() or {}
+    end)
     Citizen.Wait(0)
 	end
 end)
@@ -155,9 +158,7 @@ AddEventHandler('ls-radio:onRadioDrop', function(source)
   local playerName = GetPlayerName(source)
   local getPlayerRadioChannel = exports.tokovoip_script:getPlayerData(playerName, "radio:channel")
 
-
   if getPlayerRadioChannel ~= "nil" then
-
     exports.tokovoip_script:removePlayerFromRadio(getPlayerRadioChannel)
     exports.tokovoip_script:setPlayerData(playerName, "radio:channel", "nil", true)
     exports['mythic_notify']:DoHudText('inform', Config.messages['you_leave'] .. getPlayerRadioChannel .. '.00 MHz </b>')
